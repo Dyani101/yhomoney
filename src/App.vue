@@ -78,114 +78,6 @@ function makeId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 }
 
-function seededEntriesForMonth(monthIndex: number, year: number): BudgetEntry[] {
-  const isCurrentMonth = new Date().getMonth() === monthIndex && new Date().getFullYear() === year
-
-  if (!isCurrentMonth) {
-    return [
-      {
-        id: makeId('entry'),
-        name: 'Salary',
-        amount: 28000,
-        category: 'Income',
-        entryType: 'income',
-        description: 'Primary salary deposit',
-        paymentFrequency: 'Monthly',
-        recurring: true,
-        carriedOver: true,
-        createdAt: new Date(year, monthIndex, 3).toISOString(),
-      },
-      {
-        id: makeId('entry'),
-        name: 'Rent',
-        amount: 9500,
-        category: 'Housing',
-        entryType: 'expense',
-        description: 'Apartment rental',
-        paymentFrequency: 'Monthly',
-        recurring: true,
-        carriedOver: true,
-        createdAt: new Date(year, monthIndex, 2).toISOString(),
-      },
-      {
-        id: makeId('entry'),
-        name: 'Groceries',
-        amount: 3200,
-        category: 'Groceries',
-        entryType: 'expense',
-        description: 'Food and household essentials',
-        paymentFrequency: 'Monthly',
-        recurring: false,
-        carriedOver: true,
-        createdAt: new Date(year, monthIndex, 4).toISOString(),
-      },
-    ]
-  }
-
-  return [
-    {
-      id: makeId('entry'),
-      name: 'Salary',
-      amount: 31000,
-      category: 'Income',
-      entryType: 'income',
-      description: 'Primary salary deposit',
-      paymentFrequency: 'Monthly',
-      recurring: true,
-      carriedOver: true,
-      createdAt: new Date(year, monthIndex, 1).toISOString(),
-    },
-    {
-      id: makeId('entry'),
-      name: 'Rent',
-      amount: 9500,
-      category: 'Housing',
-      entryType: 'expense',
-      description: 'Apartment rental',
-      paymentFrequency: 'Monthly',
-      recurring: true,
-      carriedOver: true,
-      createdAt: new Date(year, monthIndex, 2).toISOString(),
-    },
-    {
-      id: makeId('entry'),
-      name: 'Car instalment',
-      amount: 4800,
-      category: 'Vehicle',
-      entryType: 'expense',
-      description: 'Vehicle finance payment',
-      paymentFrequency: 'Monthly',
-      recurring: true,
-      carriedOver: true,
-      createdAt: new Date(year, monthIndex, 3).toISOString(),
-    },
-    {
-      id: makeId('entry'),
-      name: 'Groceries',
-      amount: 3800,
-      category: 'Groceries',
-      entryType: 'expense',
-      description: 'Monthly groceries and household items',
-      paymentFrequency: 'Monthly',
-      recurring: false,
-      carriedOver: false,
-      createdAt: new Date(year, monthIndex, 4).toISOString(),
-    },
-    {
-      id: makeId('entry'),
-      name: 'Medical aid',
-      amount: 2400,
-      category: 'Insurance',
-      entryType: 'expense',
-      description: 'Health cover premium',
-      paymentFrequency: 'Monthly',
-      recurring: true,
-      carriedOver: true,
-      createdAt: new Date(year, monthIndex, 5).toISOString(),
-    },
-  ]
-}
-
 function makeMonth(year: number, monthIndex: number, entries: BudgetEntry[] = []): BudgetMonth {
   const date = new Date(year, monthIndex, 1)
 
@@ -195,16 +87,16 @@ function makeMonth(year: number, monthIndex: number, entries: BudgetEntry[] = []
     year,
     monthIndex,
     entries,
-    activities: entries.length
-      ? [
-          {
-            id: makeId('activity'),
-            title: 'Budget opened',
-            details: `${entries.length} entries were loaded for this month.`,
-            createdAt: new Date(year, monthIndex, 1, 9).toISOString(),
-          },
-        ]
-      : [],
+    activities: [
+      {
+        id: makeId('activity'),
+        title: entries.length ? 'Budget opened' : 'Budget started',
+        details: entries.length
+          ? `${entries.length} entries are in this month.`
+          : 'Your budget is ready for its first income or expense.',
+        createdAt: new Date(year, monthIndex, 1, 9).toISOString(),
+      },
+    ],
   }
 }
 
@@ -218,8 +110,8 @@ function buildInitialMonths(): BudgetMonth[] {
   const previousMonthIndex = previousMonthDate.getMonth()
 
   return [
-    makeMonth(previousYear, previousMonthIndex, seededEntriesForMonth(previousMonthIndex, previousYear)),
-    makeMonth(currentYear, currentMonth, seededEntriesForMonth(currentMonth, currentYear)),
+    makeMonth(previousYear, previousMonthIndex),
+    makeMonth(currentYear, currentMonth),
   ]
 }
 
@@ -293,6 +185,12 @@ const comparisonSummary = computed(() => ({
 const suggestions = computed(() => {
   const items: string[] = []
 
+  if (activeMonth.value.entries.length === 0) {
+    items.push('Start with your monthly income, then add your essential costs so the budget reflects your real plan.')
+    items.push('Add rent, groceries, transport, medical aid, and debt repayments to build a realistic picture.')
+    return items
+  }
+
   if (remainingBalance.value > 0) {
     items.push(
       `You have ${formatCurrency(remainingBalance.value)} left after planned expenses. Consider building a small emergency buffer or paying down costly debt first.`,
@@ -305,7 +203,7 @@ const suggestions = computed(() => {
     items.push('Your planned spending is exactly aligned with your income this month. Keep an eye on variable expenses to protect your buffer.')
   }
 
-  const recurringCount = activeMonth.value.entries.filter((entry) => entry.recurring).length
+  const recurringCount = activeMonth.value.entries.filter((entry: BudgetEntry) => entry.recurring).length
   if (recurringCount > 0) {
     items.push(
       `${recurringCount} recurring commitments are active this month, which makes your fixed-cost picture clearer and easier to manage.`,
@@ -314,7 +212,7 @@ const suggestions = computed(() => {
     items.push('No recurring entries are flagged yet. Add your fixed monthly commitments to keep the month realistic.')
   }
 
-  const savingsEntries = activeMonth.value.entries.filter((entry) => entry.category === 'Savings').length
+  const savingsEntries = activeMonth.value.entries.filter((entry: BudgetEntry) => entry.category === 'Savings').length
   if (savingsEntries === 0) {
     items.push('No savings contribution is budgeted yet. Even a small monthly transfer can strengthen your cash cushion.')
   }
@@ -394,6 +292,18 @@ function deleteEntry(entryId: string) {
   addActivity(month, 'Removed entry', `${entry.name} was deleted from the budget.`)
 }
 
+function setEntryMode(type: EntryType, category: string) {
+  entryForm.value.entryType = type
+  entryForm.value.category = category
+  entryForm.value.recurring = type === 'expense'
+
+  if (type === 'income') {
+    entryForm.value.name = ''
+    entryForm.value.amount = 0
+    entryForm.value.description = ''
+  }
+}
+
 function formatDate(dateString: string) {
   return new Intl.DateTimeFormat('en-ZA', {
     day: 'numeric',
@@ -408,10 +318,23 @@ function formatDate(dateString: string) {
     <header class="topbar">
       <div>
         <p class="eyebrow">Personal budgeting</p>
-        <h1>YhoMoney</h1>
+        <h1>YhoMoney!</h1>
       </div>
       <button class="primary-button" @click="createMonthCard">+ New month</button>
     </header>
+
+    <section v-if="activeMonth.entries.length === 0" class="panel journey-panel">
+      <div class="journey-copy">
+        <span class="mini-badge">Quick start</span>
+        <h2>Build your budget in 3 steps</h2>
+        <p>Start with your income, add your essentials, and review what is left for the month.</p>
+      </div>
+      <div class="journey-actions">
+        <button class="journey-button income" @click="setEntryMode('income', 'Income')">1. Add income</button>
+        <button class="journey-button expense" @click="setEntryMode('expense', 'Housing')">2. Add essentials</button>
+        <button class="journey-button plan" @click="setEntryMode('expense', 'Savings')">3. Set a plan</button>
+      </div>
+    </section>
 
     <div class="layout">
       <aside class="sidebar panel">
@@ -544,7 +467,11 @@ function formatDate(dateString: string) {
             <div class="panel-header">
               <h2>Budget entries</h2>
             </div>
-            <ul class="entry-list">
+            <div v-if="activeMonth.entries.length === 0" class="empty-state-box">
+              <h3>Start this month</h3>
+              <p>Add your income, rent, groceries, debt and other regular payments to begin planning with confidence.</p>
+            </div>
+            <ul v-else class="entry-list">
               <li v-for="entry in activeMonth.entries" :key="entry.id" class="entry-item">
                 <div class="entry-main">
                   <div class="entry-badges">

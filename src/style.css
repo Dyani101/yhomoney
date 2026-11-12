@@ -1,21 +1,21 @@
 :root {
-  --bg: #eff2ec;
-  --panel: #f7f6f2;
-  --panel-soft: #eef4ee;
+  --bg: #fff5f1;
+  --panel: #fffaf7;
+  --panel-soft: #ffe8df;
   --card: #ffffff;
-  --card-alt: #f1efe9;
-  --border: #d9ded4;
-  --text: #21312b;
-  --muted: #5e6b63;
-  --primary: #244d3c;
-  --primary-deep: #16372b;
-  --primary-soft: #dfeae3;
-  --gold: #c8b171;
-  --success: #2b7a5e;
-  --warning: #9d5e2b;
-  --danger: #a84d4d;
-  --shadow: 0 18px 40px rgba(31, 46, 39, 0.08);
-  font-family: Inter, 'Segoe UI', sans-serif;
+  --card-alt: #fff1eb;
+  --border: #f4c7bb;
+  --text: #3d1d1c;
+  --muted: #7b5350;
+  --primary: #d85d43;
+  --primary-deep: #b94530;
+  --primary-soft: #f9d9d0;
+  --gold: #e7b96f;
+  --success: #2d8d72;
+  --warning: #d77b46;
+  --danger: #b84747;
+  --shadow: 0 18px 36px rgba(163, 75, 52, 0.12);
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--text);
@@ -37,7 +37,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(180deg, #edf2ee 0%, #f6f3ee 100%);
+  background: radial-gradient(circle at top left, #fffaf6 0%, #fff1eb 34%, #fbe7dc 100%);
   color: var(--text);
 }
 
@@ -67,7 +67,75 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.journey-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
   margin-bottom: 24px;
+  background: linear-gradient(135deg, rgba(216, 93, 67, 0.12), rgba(255, 255, 255, 0.95));
+}
+
+.journey-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.mini-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  background: rgba(216, 93, 67, 0.12);
+  border: 1px solid rgba(216, 93, 67, 0.2);
+  color: var(--primary-deep);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.journey-copy h2 {
+  font-size: 1.5rem;
+}
+
+.journey-copy p {
+  color: var(--muted);
+}
+
+.journey-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.journey-button {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.journey-button.income {
+  background: rgba(45, 141, 114, 0.12);
+  border-color: rgba(45, 141, 114, 0.18);
+}
+
+.journey-button.expense {
+  background: rgba(216, 93, 67, 0.1);
+  border-color: rgba(216, 93, 67, 0.2);
+}
+
+.journey-button.plan {
+  background: rgba(231, 185, 111, 0.18);
+  border-color: rgba(231, 185, 111, 0.28);
 }
 
 .eyebrow {
@@ -100,11 +168,11 @@ h2 {
 .primary-button {
   border: 0;
   border-radius: 12px;
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, #ef825d 100%);
   color: white;
   padding: 0.8rem 1.2rem;
   font-weight: 700;
-  box-shadow: var(--shadow);
+  box-shadow: 0 14px 28px rgba(216, 93, 67, 0.28);
 }
 
 .primary-button.full {
@@ -119,10 +187,11 @@ h2 {
 }
 
 .panel {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(244, 199, 187, 0.8);
   border-radius: 24px;
   box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
 }
 
 .sidebar {
@@ -152,8 +221,8 @@ h2 {
 }
 
 .month-card.active {
-  background: var(--primary-soft);
-  border-color: rgba(36, 77, 60, 0.4);
+  background: linear-gradient(135deg, rgba(216, 93, 67, 0.12), rgba(255, 239, 233, 0.95));
+  border-color: rgba(216, 93, 67, 0.35);
 }
 
 .month-label {
@@ -186,7 +255,7 @@ h2 {
 }
 
 .stat-card.accent {
-  background: linear-gradient(135deg, rgba(36, 77, 60, 0.1), rgba(200, 177, 113, 0.12));
+  background: linear-gradient(135deg, rgba(216, 93, 67, 0.12), rgba(255, 228, 200, 0.7));
 }
 
 .label {
@@ -445,6 +514,19 @@ textarea {
   border: 1px dashed var(--border);
   border-radius: 14px;
   padding: 1rem;
+}
+
+.empty-state-box {
+  background: linear-gradient(135deg, rgba(216, 93, 67, 0.08), rgba(255, 255, 255, 0.8));
+  border: 1px dashed rgba(216, 93, 67, 0.4);
+  border-radius: 18px;
+  padding: 1.25rem;
+  color: var(--muted);
+}
+
+.empty-state-box h3 {
+  margin-bottom: 8px;
+  color: var(--text);
 }
 
 .suggestions-list {
